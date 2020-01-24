@@ -48,8 +48,6 @@ for (country in c("United Kingdom", "Malawi")) {  # names(dat_full)) {
   for (yr in 1:(n_yr - 1)) {
   
     bn <- sum(dat$BirR[yr, ] * dat$Pop_F[yr, 16:50], na.rm=T)
-    br <- bn / sum(P0, na.rm=T)
-    
     
     #### Total
     p0 <- dat$Pop_T[yr, ]
@@ -60,7 +58,7 @@ for (country in c("United Kingdom", "Malawi")) {  # names(dat_full)) {
     p0 <- tapply(p0, agegp, sum)
     p1 <- tapply(p1, agegp, sum)
     
-    brs_t[yr] <- br <- bn / sum(P0, na.rm=T)
+    brs_t[yr] <- br <- bn / sum(p0, na.rm=T)
     mrs_t[yr, ] <- calculate_mr_five(p0, p1, dr, br, adj=T)$MigR
     ps_t[yr, ] <- p0
     
@@ -74,7 +72,7 @@ for (country in c("United Kingdom", "Malawi")) {  # names(dat_full)) {
     p0 <- tapply(p0, agegp, sum)
     p1 <- tapply(p1, agegp, sum)
     
-    brs_f[yr] <- br <- bn * bpf / sum(P0, na.rm=T)
+    brs_f[yr] <- br <- bn * bpf / sum(p0, na.rm=T)
     mrs_f[yr, ] <- calculate_mr_five(p0, p1, dr, br, adj=T)$MigR
     ps_f[yr, ] <- p0
     
@@ -87,7 +85,7 @@ for (country in c("United Kingdom", "Malawi")) {  # names(dat_full)) {
     p0 <- tapply(p0, agegp, sum)
     p1 <- tapply(p1, agegp, sum)
     
-    brs_m[yr] <- br <- bn * bpm / sum(P0, na.rm=T)
+    brs_m[yr] <- br <- bn * bpm / sum(p0, na.rm=T)
     mrs_m[yr, ] <- calculate_mr_five(p0, p1, dr, br, adj=T)$MigR
     ps_m[yr, ] <- p0
     
@@ -177,7 +175,7 @@ for (country in c("United Kingdom", "Malawi")) {  # names(dat_full)) {
   
   sim_all[[country]] <- data.frame(PopN_T=ps_t, BirR_T=brs_t, DeaR_T=drs_t, MigR_T=mrs_t)
 
-  print(paste0(country, " completed"))
+  cat(country, "--> completed\n")
 }
 
 
