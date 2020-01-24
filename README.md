@@ -28,9 +28,15 @@ sim_agp
 sim_agp_sex
 ```
 
+To specify a country,
+```
+names(sim_agp) # to see the list of available countries
+
+pars <- sim_agp['United Kindom']
+```
 
 
-See /Example for the usage in **deSolve** and **odin**
+See /Example for the usage in `deSolve` and `odin`
 
 
 ## Introduction
@@ -93,6 +99,7 @@ We solved **M** with `optim` function for minimising the euclidean distance betw
 In transition matrix, the death rates locates at: **M**[absorbing state, age groups] <- - migration rates
 
 To note that, migration is the difference between immigration and emigration, so it comes with a negative sign in the matrix.
+
 
 ## Academic contact
 
