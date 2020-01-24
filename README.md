@@ -90,7 +90,8 @@ The **B**, **A**, **D**, and **M** can move the populatin in the current year (*
 We solved **M** with `optim` function for minimising the euclidean distance between **P0** and **P1**.
 
 #### In simulation models,
-In transition matrix, the death rates locates at: **M**[absorbing state, age groups] <- - migration rates 
+In transition matrix, the death rates locates at: **M**[absorbing state, age groups] <- - migration rates
+
 To note that, migration is the difference between immigration and emigration, so it comes with a negative sign in the matrix.
 
 ## Academic contact
