@@ -24,7 +24,7 @@ n_yr <- 100
 
 
 
-for (country in c("United Kingdom", "Malawi")) {  # names(dat_full)) {
+for (country in names(dat_full)) {
   dat <- dat_full[[country]]
   
   ## With Age groups
