@@ -18,18 +18,18 @@ calculate_mr_five <- function(p0, p1, dr, br, adj=T) {
   
   if (adj) {
     fn <- function(x) {
-      trMBAD <- Matrix::expm(diag(x) + BAD)
+      trMBAD <- expm::expm(diag(x) + BAD, method = "hybrid_Eigen_Ward")
       PMBAD <- trMBAD %*% p0
       sum((PMBAD / p1 - 1)^2)
     }
     
-    sol <- optimParallel(mr, fn, method=c("L-BFGS-B"), lower=-0.5, upper=0.5)
+    sol <- optimParallel(mr, fn, method=c("L-BFGS-B"), lower=-1, upper=1)
     mr <- sol$par
   }
   
   trMBAD <- expm(diag(mr) + BAD)
   PMBAD <- trMBAD %*% p0
-  print(sum((PMBAD / p1 - 1)^2))
+
   return(list(
     MigR=-mr,
     P_hat=as.vector(PMBAD),

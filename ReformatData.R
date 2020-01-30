@@ -1,10 +1,9 @@
 rm(list=ls())
 
 library(optimParallel)
-library(Matrix)
+library(expm)
 
-cl <- makeCluster(3)
-setDefaultCluster(cl=cl) 
+
 
 source("Source/migration.R")
 load(file="Input/DataByCountry.rdata")
@@ -14,8 +13,12 @@ load(file="Input/DataByCountry.rdata")
 
 agegp <- c(rep(1:16, each=5), rep(16, 21))
 srb <- 107
-adj <- F
+adj <- T
 
+if (adj) {
+  cl <- makeCluster(3)
+  setDefaultCluster(cl=cl) 
+}
 # Initialisation --------------------
 
 sim_agp_sex <- list()
