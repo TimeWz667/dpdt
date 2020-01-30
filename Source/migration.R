@@ -1,59 +1,40 @@
-library(Matrix)
-
-
 calculate_mr_five <- function(p0, p1, dr, br, adj=T) {
   n_age <- length(dr)
   
-  P0 <- c(p0, 0)
-  P1 <- c(p1, 0)
+  p0 <- matrix(p0, n_age, 1)
+  p1 <- matrix(p1, n_age, 1)
   
-  BAD <- matrix(0, n_age + 1, n_age + 1)
-  BAD[1:n_age + 1, 1:n_age] <- diag(1/5, n_age)
-  BAD[1, 2:n_age] <- br
-  BAD[n_age + 1, 2:n_age] <- dr[2:n_age] - br
-  BAD[n_age + 1, 1] <- dr[1]
-  BAD <- BAD - diag(colSums(BAD), n_age + 1)
+  BAD <- - diag(dr)
+  BAD[1, ] <- BAD[1, ] + br
+  BAD[1:(n_age - 1), 1:(n_age - 1)] <- BAD[1:(n_age - 1), 1:(n_age - 1)] + diag(-1/5, n_age - 1)
+  BAD[2:n_age, 1:(n_age - 1)] <- BAD[2:n_age, 1:(n_age - 1)] + diag(1/5, n_age - 1)
   
   trBAD <- expm(BAD)
-  PBAD <- trBAD %*% P0
-  PBAD <- PBAD[1:n_age]
-  
-  mp <- (PBAD - p1)/PBAD
-  mr <- -log(1-mp)
+  PBAD <- trBAD %*% p0
+
+  mp <- (p1 - PBAD)/PBAD
+  mr <- as.vector(-log(1-mp))
   
   
   if (adj) {
-    M <- matrix(0, n_age + 1, n_age + 1)
-    
     fn <- function(x) {
-      m1 <- M
-      m1[n_age + 1, 1:n_age] <- x
-      m1 <- m1 - diag(colSums(m1), n_age + 1)
-      trMBAD <- expm(m1 + BAD)
-      
-      PMBAD <- trMBAD %*% P0
-      sum((PMBAD[1:n_age] - p1)^2)
+      trMBAD <- Matrix::expm(diag(x) + BAD)
+      PMBAD <- trMBAD %*% p0
+      sum((PMBAD / p1 - 1)^2)
     }
     
-    sol <- optim(mr, fn, method=c("L-BFGS-B"), lower=-1, upper=.1)
+    sol <- optimParallel(mr, fn, method=c("L-BFGS-B"), lower=-0.5, upper=0.5)
     mr <- sol$par
   }
   
-  M <- matrix(0, n_age + 1, n_age + 1)
-  M[n_age + 1, 1:n_age] <- mr
-  M <- M - diag(colSums(M), n_age + 1)
-  
-  trMBAD <- expm(M + BAD)
-  
-  PMBAD <- trMBAD %*% P0
-  PMBAD <- PMBAD[1:n_age]
-  
+  trMBAD <- expm(diag(mr) + BAD)
+  PMBAD <- trMBAD %*% p0
+  print(sum((PMBAD / p1 - 1)^2))
   return(list(
     MigR=-mr,
-    P_hat=PMBAD,
-    Error=sum(PMBAD-p1)
+    P_hat=as.vector(PMBAD),
+    Error=sum((PMBAD / p1 - 1)^2)
   ))
-  
 }
 
 
