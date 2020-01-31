@@ -9,7 +9,7 @@ load(file="Output/SimDemo.rdata")
 country <- "Malawi"
 pop <- sim_agp[[country]]
 year0 <- 2005
-year1 <- 2050
+year1 <- 2035
 i_year <- year0:year1 - 1999
 
 
@@ -26,14 +26,14 @@ pars <- list(
 ## Construct model ----
 model_agp <- odin::odin({
   deriv(A[1]) <- N * br_t + A[i] * (mr_t[i] - dr_t[i] - 1/5)
-  deriv(A[2:(N_agp-1)]) <-  A[i] * (mr_t[i] - dr_t[i] - 1/5) + A[i-1] * 1/5
-  deriv(A[N_agp]) <-        A[i] * (mr_t[i] - dr_t[i]) +       A[i-1] * 1/5
+  deriv(A[2:N_agp]) <-  A[i] * (mr_t[i] - dr_t[i] - 1/5) + A[i-1] * 1/5
+  # deriv(A[N_agp]) <-        A[i] * (mr_t[i] - dr_t[i]) +       A[i-1] * 1/5
   
   initial(A[]) <- A0[i] 
   dim(A) <- N_agp
   
   output(N) <- N
-
+  
   N_agp <- 16
   N <- sum(A)
   
@@ -68,7 +68,7 @@ ys <- ys[times == round(times), ]
 ## Compare with data
 sim <- data.frame(t = ys[, "t"], N = ys[, "N"])
 dat <- data.frame(t = year0:year1, N = rowSums(pop$PopN_T[i_year, 1:16]))
-red <- (sim - dat) / dat * 100
+red <- (log(sim) - log(dat)) * 100
 red$t <- dat$t
 
 

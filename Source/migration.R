@@ -4,9 +4,9 @@ calculate_mr_five <- function(p0, p1, dr, br, adj=T) {
   p0 <- matrix(p0, n_age, 1)
   p1 <- matrix(p1, n_age, 1)
   
-  BAD <- - diag(dr)
+  BAD <- diag(- dr - 1/5)
   BAD[1, ] <- BAD[1, ] + br
-  BAD[1:(n_age - 1), 1:(n_age - 1)] <- BAD[1:(n_age - 1), 1:(n_age - 1)] + diag(-1/5, n_age - 1)
+  # BAD[1:(n_age - 1), 1:(n_age - 1)] <- BAD[1:(n_age - 1), 1:(n_age - 1)] + diag(-1/5, n_age - 1)
   BAD[2:n_age, 1:(n_age - 1)] <- BAD[2:n_age, 1:(n_age - 1)] + diag(1/5, n_age - 1)
   
   trBAD <- expm(BAD)
@@ -17,23 +17,23 @@ calculate_mr_five <- function(p0, p1, dr, br, adj=T) {
   
   
   if (adj) {
-    fn <- function(x) {
-      trMBAD <- expm::expm(diag(x) + BAD, method = "hybrid_Eigen_Ward")
+    fn <- function(x, BAD, p1, p0) {
+      trMBAD <- expm::expm(diag(x) + BAD)
       PMBAD <- trMBAD %*% p0
-      sum((PMBAD / p1 - 1)^2)
+      sum((PMBAD - p1)^2)
     }
     
-    sol <- optimParallel(mr, fn, method=c("L-BFGS-B"), lower=-1, upper=1)
+    sol <- optimParallel(mr, fn, method = "L-BFGS-B", lower = -1, upper = 1, p1 = p1, p0 = p0, BAD = BAD)
     mr <- sol$par
   }
   
-  trMBAD <- expm(diag(mr) + BAD)
+  trMBAD <- expm::expm(diag(mr) + BAD)
   PMBAD <- trMBAD %*% p0
 
   return(list(
-    MigR=-mr,
-    P_hat=as.vector(PMBAD),
-    Error=sum((PMBAD / p1 - 1)^2)
+    MigR = mr,
+    P_hat = as.vector(PMBAD),
+    Error = sum((PMBAD - p1)^2)
   ))
 }
 

@@ -82,7 +82,7 @@ library(gridExtra)
 
 sim <- data.frame(ys)[c("t", "N")]
 dat <- data.frame(t = year0:year1, N = pop$PopN_F[i_year] + pop$PopN_M[i_year])
-red <- (sim - dat) / dat * 100
+red <- (log(sim) - log(dat)) * 100
 red$t <- dat$t
 
 
