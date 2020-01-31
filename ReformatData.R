@@ -18,7 +18,6 @@ if (adj) {
   cl <- makeCluster(3)
   setDefaultCluster(cl=cl) 
 }
-agespan <- c(rep(5, 15), 26)
 
 # Initialisation --------------------
 
@@ -55,69 +54,57 @@ for (country in c("Malawi")) {  #names(dat_full)) {
   ps_m <- matrix(0, n_yr - 1, n_agegp)
   ps_t <- matrix(0, n_yr - 1, n_agegp)
   
-  ps_f_0 <- dat$Pop_F[1, ]
-  ps_m_0 <- dat$Pop_M[1, ]
-  ps_t_0 <- dat$Pop_T[1, ]
-  
-  ps_f[1, ] <- tapply(dat$Pop_F[1, ], agegp, sum)
-  ps_m[1, ] <- tapply(dat$Pop_M[1, ], agegp, sum)
-  ps_t[1, ] <- tapply(dat$Pop_T[1, ], agegp, sum)
-  
   
   for (yr1 in 2:n_yr) {
     yr0 <- yr1 - 1
-    bn <- sum(pexp(dat$BirR[yr0, ]) * ps_f_0[16:50], na.rm=T)
+    bn <- sum(pexp(dat$BirR[yr0, ]) * dat$Pop_F[yr0, 16:50], na.rm=T)
     
     #### Total --------------------
-    p0 <- ps_t_0
+    p0 <- dat$Pop_T[yr0, ]
     p1 <- dat$Pop_T[yr1, ]
     dr <- dat$DeaR_T[yr0, ]
     
-    dr <- tapply(dr * p0, agegp, sum) / tapply(p0, agegp, sum)
+    drs_t[yr0, ] <- dr <- tapply(dr * p0, agegp, sum) / tapply(p0, agegp, sum)
     p0 <- tapply(p0, agegp, sum)
     p1 <- tapply(p1, agegp, sum)
-    br <- bn / sum(p0, na.rm=T)
     
-    drs_t[yr0, ] <- dr
-    brs_t[yr0] <- br
+    brs_t[yr0] <- br <- bn / sum(p0, na.rm=T)
+    
     mig <- calculate_mr_five(p0, p1, dr, br, adj=adj)
     mrs_t[yr0, ] <- mig$MigR
     ps_t[yr0, ] <- p0
-    ps_t_0 <- rep(mig$P_hat / agespan, agespan)
+
     
     #### Female --------------------
-    p0 <- ps_f_0
+    p0 <- dat$Pop_F[yr0, ]
     p1 <- dat$Pop_F[yr1, ]
     dr <- dat$DeaR_F[yr0, ]
     
-    dr <- tapply(dr * p0, agegp, sum) / tapply(p0, agegp, sum)
+    drs_f[yr0, ] <- dr <- tapply(dr * p0, agegp, sum) / tapply(p0, agegp, sum)
     p0 <- tapply(p0, agegp, sum)
     p1 <- tapply(p1, agegp, sum)
-    br <- bn * bpf / sum(p0, na.rm=T)
+
+    brs_f[yr0] <- br <- bn * bpf / sum(p0, na.rm=T)
     
-    drs_f[yr0, ] <- dr
-    brs_f[yr0] <- br
     mig <- calculate_mr_five(p0, p1, dr, br, adj=adj)
     mrs_f[yr0, ] <- mig$MigR
     ps_f[yr0, ] <- p0
-    ps_f_0 <- rep(mig$P_hat / agespan, agespan)
+
     
     #### Male --------------------
-    p0 <- ps_m_0
+    p0 <- dat$Pop_M[yr0, ]
     p1 <- dat$Pop_M[yr1, ]
     dr <- dat$DeaR_M[yr0, ]
     
-    dr <- tapply(dr * p0, agegp, sum) / tapply(p0, agegp, sum)
+    drs_m[yr0, ] <- dr <- tapply(dr * p0, agegp, sum) / tapply(p0, agegp, sum)
     p0 <- tapply(p0, agegp, sum)
     p1 <- tapply(p1, agegp, sum)
-    br <- bn * bpm / sum(p0, na.rm=T)
     
-    drs_m[yr0, ] <- dr
-    brs_m[yr0] <- br
+    brs_m[yr0] <- br <- bn * bpm / sum(p0, na.rm=T)
+    
     mig <- calculate_mr_five(p0, p1, dr, br, adj=adj)
     mrs_m[yr0, ] <- mig$MigR
     ps_m[yr0, ] <- p0
-    ps_m_0 <- rep(mig$P_hat / agespan, agespan)
     
     print(yr0)
   }
