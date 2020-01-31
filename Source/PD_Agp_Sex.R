@@ -100,7 +100,7 @@ ys <- ys[times == round(times), ]
 ## Compare with data
 sim <- data.frame(t = ys[, "t"], N = ys[, "N"])
 dat <- data.frame(t = year0:year1, N = rowSums(pop$PopN_F[i_year, ] + pop$PopN_M[i_year, ]))
-red <- (log(sim) - log(dat)) * 100
+red <- (sim - dat) / dat * 100
 red$t <- dat$t
 
 
@@ -121,7 +121,7 @@ g_all <- ggplot(data = sim, aes(x = t, y = N / 1e6)) +
 g_red <- ggplot(data = red, aes(x = t, y = N)) +
   geom_point() + 
   scale_x_continuous("Year") +
-  scale_y_continuous("Percentage of real data (%)", limits = c(-3, 3)) +
+  scale_y_continuous("Percentage of real data (%)", limits = c(-.1, .1)) +
   labs(title="Residuals") +
   theme_bw() + 
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
@@ -139,7 +139,7 @@ dat <- rbind(
 
 red <- data.frame(
   t = sim$t,
-  N = (log(sim$N) - log(dat$N)) * 100,
+  N = (sim$N - dat$N) / dat$N * 100,
   Sex = sim$Sex
 ) 
 
@@ -160,7 +160,7 @@ g_sex <- ggplot(data = sim, aes(x = t, y = N / 1e6)) +
 g_red_sex <- ggplot(data = red, aes(x = t, y = N)) +
   geom_point() + 
   scale_x_continuous("Year") +
-  scale_y_continuous("Percentage of real data (%)", limits = c(-1, 1)) +
+  scale_y_continuous("Percentage of real data (%)", limits = c(-.1, .1)) +
   facet_wrap(.~Sex) + 
   labs(title="Residuals") +
   theme_bw() + 
@@ -205,9 +205,9 @@ g_py <- ggplot(sim, aes(x = Age, y = N / 1e6, fill = Sex)) +
   geom_bar(stat = "identity") + 
   geom_point(data = dat) +
   facet_wrap(.~Year) + 
-  scale_y_continuous(labels = paste0(as.character(c(seq(2, 0, -1), seq(1, 2, 1))), "m")) + 
+  scale_y_continuous("Population size", labels = paste0(as.character(c(seq(2, 0, -1), seq(1, 2, 1))), "m")) + 
   coord_flip()
 
 
-ggsave(file="Output/PD_AS_res.pdf", g_res)
+ggsave(file="Output/PD_AS_res.pdf", g_res, width=8, height=7)
 ggsave(file="Output/PD_AS_agestr.pdf", g_py)

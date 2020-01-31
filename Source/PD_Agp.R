@@ -68,7 +68,7 @@ ys <- ys[times == round(times), ]
 ## Compare with data
 sim <- data.frame(t = ys[, "t"], N = ys[, "N"])
 dat <- data.frame(t = year0:year1, N = rowSums(pop$PopN_T[i_year, 1:16]))
-red <- (log(sim) - log(dat)) * 100
+red <- (sim - dat) / dat * 100
 red$t <- dat$t
 
 
@@ -89,7 +89,7 @@ g_all <- ggplot(data = sim, aes(x = t, y = N / 1e6)) +
 g_red <- ggplot(data = red, aes(x = t, y = N)) +
   geom_point() + 
   scale_x_continuous("Year") +
-  scale_y_continuous("Percentage of real data (%)", limits = c(-3, 3)) +
+  scale_y_continuous("Percentage of real data (%)", limits = c(-.1, .1)) +
   labs(title="Residuals") +
   theme_bw() + 
   theme(axis.text.x = element_text(angle = 90, hjust = 1))

@@ -58,7 +58,7 @@ ys <- ys[times == round(times), ]
 ## Compare with data
 sim <- data.frame(ys)
 dat <- data.frame(t=year0:year1, N=pop$PopN_T[i_year])
-red <- (log(sim) - log(dat)) * 100
+red <- (sim - dat) / dat * 100
 red$t <- dat$t
 
 

@@ -82,7 +82,7 @@ library(gridExtra)
 
 sim <- data.frame(ys)[c("t", "N")]
 dat <- data.frame(t = year0:year1, N = pop$PopN_F[i_year] + pop$PopN_M[i_year])
-red <- (log(sim) - log(dat)) * 100
+red <- (sim - dat) / dat * 100
 red$t <- dat$t
 
 
@@ -103,7 +103,7 @@ g_all <- ggplot(data = sim, aes(x = t, y = N / 1e6)) +
 g_red <- ggplot(data = red, aes(x = t, y = N)) +
   geom_point() + 
   scale_x_continuous("Year") +
-  scale_y_continuous("Percentage of real data (%)", limits = c(-3, 3)) +
+  scale_y_continuous("Percentage of real data (%)", limits = c(-.1, .1)) +
   labs(title="Residuals") +
   theme_bw() + 
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
@@ -125,9 +125,9 @@ red <- data.frame(
   Sex = sim$Sex
 ) 
 
-g_sex <- ggplot(data = sim, aes(x = t, y = N / 1e6)) +
-  geom_line(aes(colour = "Simulation")) + 
-  geom_point(data=dat, aes(colour = "Data")) + 
+g_sex <- ggplot(dat, aes(x = t, y = N / 1e6)) +
+  geom_point(aes(colour = "Data")) + 
+  geom_line(data = sim, aes(colour = "Simulation")) + 
   scale_x_continuous("Year") +
   scale_y_continuous("Total Population (millions)") +
   scale_color_discrete("Dynamics") + 
@@ -142,7 +142,7 @@ g_sex <- ggplot(data = sim, aes(x = t, y = N / 1e6)) +
 g_red_sex <- ggplot(data = red, aes(x = t, y = N)) +
   geom_point() + 
   scale_x_continuous("Year") +
-  scale_y_continuous("Percentage of real data (%)", limits = c(-3, 3)) +
+  scale_y_continuous("Percentage of real data (%)", limits = c(-.1, .1)) +
   facet_wrap(.~Sex) + 
   labs(title="Residuals") +
   theme_bw() + 
