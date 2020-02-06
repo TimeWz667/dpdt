@@ -1,5 +1,5 @@
 Package: dp_dt
-Title: What the Package Does (One Line, Title Case)
+Title: Generating Simulation-Friendly Population Dynamic Data
 Version: 0.1.0
 Authors@R: 
     person(given = "Chu-Chang",
@@ -7,7 +7,7 @@ Authors@R:
            role = c("aut", "cre"),
            email = "TimeWz667@gmail.com",
            comment = c(ORCID = "https://orcid.org/0000-0002-4719-117X"))
-Description: A model of population dynamics based on the United Nations population dynamic data.
+Description: A model of population dynamics based on the World Population Prospects data.
 License: MIT
 Encoding: UTF-8
 LazyData: true
