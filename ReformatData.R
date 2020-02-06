@@ -26,15 +26,15 @@ sim_agp <- list()
 sim_sex <- list()
 sim_all <- list()
 
-bpm <- srb/(100 + srb)
-bpf <- 100/(100 + srb)
+bpm <- srb / (100 + srb)
+bpf <- 100 / (100 + srb)
 
 n_agegp <- 16
 n_yr <- 100
 
 
 
-for (country in c("Malawi")) {  #names(dat_full)) {
+for (country in c("Malawi", "United Kingdom")) {  #names(dat_full)) {
   dat <- dat_full[[country]]
   
   ## With Age groups --------------------

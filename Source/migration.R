@@ -1,4 +1,4 @@
-calculate_mr_five <- function(p0, p1, dr, br, adj=T) {
+calculate_mr_five <- function(p0, p1, dr, br, ageing_to_dead=F) {
   n_age <- length(dr)
   
   p0 <- matrix(p0, n_age, 1)

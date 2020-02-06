@@ -25,26 +25,8 @@ pars <- list(
 
 
 ## Construct model ----
-model_all <- odin::odin({
-  deriv(N) <- N * (br_t + mr_t - dr_t)
-  initial(N) <- N0
-  
-  N0 <- user()
-  
-  br_t <- interpolate(tt, br, "constant")
-  mr_t <- interpolate(tt, mr, "constant")
-  dr_t <- interpolate(tt, dr, "constant")
-  
-  
-  tt[] <- user()
-  dim(tt) <- user()
-  br[] <- user()
-  dim(br) <- user()
-  mr[] <- user()
-  dim(mr) <- user()
-  dr[] <- user()
-  dim(dr) <- user()
-})
+f <- system.file("example/PD_All.R", package = "dpdt")
+model_all <- odin::odin(f)
 
 cm_all <- model_all(user=pars)
 
