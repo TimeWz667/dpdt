@@ -16,5 +16,7 @@ Import:
   ggplot2,
   gridExtra,
   deSolve,
+  expm,
+  optimParallel,
   odin
 RoxygenNote: 7.0.2
