@@ -1,4 +1,4 @@
-Package: dp_dt
+Package: dpdt
 Title: Generating Simulation-Friendly Population Dynamic Data
 Version: 0.1.0
 Authors@R: 
@@ -17,3 +17,4 @@ Import:
   gridExtra,
   deSolve,
   odin
+RoxygenNote: 7.0.2
