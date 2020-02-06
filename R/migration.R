@@ -30,5 +30,16 @@ calc_migration_agp <- function(p0, p1, br, dr, ageing, n_agp, optim_fn) {
     P_hat = as.vector(PMBAD),
     MSE = mean((PMBAD - p1)^2)
   ))
+}
+
+
+calc_migration_agg <- function(p0, p1, dr, br) {
+  mr <- log(p1/p0) - br + dr
+  p_hat <- p0 * exp(mr + br - dr)
   
+  return(list(
+    MigR = mr,
+    P_hat = p_hat,
+    MSE = p_hat - p1
+  ))
 }

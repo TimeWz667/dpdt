@@ -3,5 +3,7 @@
 S3method(print,pop_raw)
 export(as_sim_age)
 export(as_sim_age_sex)
+export(as_sim_all)
+export(as_sim_sex)
 export(fetch_demography)
 import(data.table)

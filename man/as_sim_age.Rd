@@ -3,22 +3,18 @@
 \name{as_sim_age}
 \alias{as_sim_age}
 \alias{as_sim_age_sex}
+\alias{as_sim_all}
+\alias{as_sim_sex}
 \title{Title}
 \usage{
-as_sim_age(
-  dat,
-  year0,
-  year1,
-  agp,
-  agl,
-  sex = c("T", "F", "M"),
-  ageing_to_dead = FALSE,
-  k = 1,
-  bind = FALSE,
-  multi_task = FALSE
-)
+as_sim_age(dat, year0, year1, agp, agl, sex = c("T", "F", "M"),
+  ageing_to_dead = FALSE, k = 1, bind = FALSE, multi_task = FALSE)
 
 as_sim_age_sex(dat, year0, year1, agp, agl, sex_ratio = 107, ...)
+
+as_sim_all(dat, year0, year1, sex = c("T", "F", "M"), k = 1)
+
+as_sim_sex(dat, year0, year1, sex_ratio = 107)
 }
 \arguments{
 \item{dat}{}
@@ -42,9 +38,6 @@ as_sim_age_sex(dat, year0, year1, agp, agl, sex_ratio = 107, ...)
 \item{multi_task}{cores for parallel computation, FALSE for single tread.}
 
 \item{sex_ratio}{sex ratio at birth, 107 for the global average}
-}
-\value{
-
 }
 \description{
 Title

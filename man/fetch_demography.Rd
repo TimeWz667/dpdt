@@ -5,11 +5,8 @@
 \alias{print.pop_raw}
 \title{Fetch data from a github repo}
 \usage{
-fetch_demography(
-  folder = "ByCountry/United Kingdom",
-  repo = "TimeWz667/pop4modelling",
-  branch = "master"
-)
+fetch_demography(folder = "ByCountry/United Kingdom",
+  repo = "TimeWz667/pop4modelling", branch = "master")
 
 \method{print}{pop_raw}(obj)
 }

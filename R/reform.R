@@ -24,8 +24,7 @@
 #' 
 as_sim_age <- function(dat, year0, year1, agp, agl, sex = c("T", "F", "M"), 
                        ageing_to_dead = FALSE, k = 1, bind = FALSE, multi_task = FALSE) {
-  require(data.table)
-  
+
   year0 <- max(year0, dat$Range[1])
   year1 <- min(year1, dat$Range[2])
   years <- year0:year1
@@ -55,7 +54,6 @@ as_sim_age <- function(dat, year0, year1, agp, agl, sex = c("T", "F", "M"),
   } else {
     optim_fn <- stats::optim 
   }
-  
   
   res.brs <- rep(0, n_year)
   res.ps <- matrix(0, n_year + 1, n_agp)
@@ -150,3 +148,87 @@ as_sim_age_sex <- function(dat, year0, year1, agp, agl, sex_ratio = 107,  ...) {
   return(res)
 }
 
+
+#' @rdname as_sim_age
+#' @import data.table
+#' @export
+as_sim_all <- function(dat, year0, year1, sex = c("T", "F", "M"), k = 1) {
+  
+  year0 <- max(year0, dat$Range[1])
+  year1 <- min(year1, dat$Range[2])
+  years <- year0:year1
+  stopifnot(year0 < year1)
+  
+  n_year <- length(years)
+  
+  sex <- match.arg(sex)
+  
+  res.brs <- rep(0, n_year)
+  res.ps <- rep(0, n_year + 1)
+  res.mrs <- rep(0, n_year)
+  res.drs <- rep(0, n_year)
+  res.mses <- rep(0, n_year)
+  
+  
+  bns <- dat$BirthN[, .(Time, Brs = Births * k)]
+  ps <- dat[[paste0("PopN_", sex)]]
+  drs <- dat[[paste0("DeaR_", sex)]]
+  
+  
+  for (yr0 in year0:year1) {
+    yr1 <- yr0 + 1
+    
+    index <- yr0 - year0 + 1
+    
+    bn <- bns[Time == yr0, Brs]
+    
+    p0 <- as.numeric(ps[Time == yr0, -1])
+    p1 <- as.numeric(ps[Time == yr1, -1])
+    dr <- as.numeric(drs[Time == yr0, -1])
+    
+    res.drs[index] <- dr <- sum(dr * p0) / sum(p0)
+    res.ps[index] <- p0 <- sum(p0)
+    p1 <- sum(p1)
+    
+    res.brs[index] <- br <- bn / sum(p0)
+    res.ps[index] <- p0
+    
+    mig <- calc_migration_agg(p0, p1, br, dr)
+    res.mrs[index] <- mig$MigR
+    res.mses[index] <- mig$MSE
+  }
+  res.ps[index + 1] <- p1
+  
+  res <- cbind(
+    Year = years,
+    BirR = res.brs,
+    DeaR = res.drs,
+    MigR = res.mrs,
+    PopN = res.ps[1:n_year],
+    MSE = res.mses
+  )
+  res <- data.table::data.table(res)
+
+  return(res)
+}
+
+
+#' @rdname as_sim_age
+#' @export
+as_sim_sex <- function(dat, year0, year1, sex_ratio = 107) {
+  
+  prop_f <- 100 / (100 + sex_ratio)
+  prop_m <- 1 - prop_f
+  
+  res_female <- as_sim_all(dat, year0, year1, sex = "F", k = prop_f)
+  res_male <- as_sim_all(dat, year0, year1, sex = "M", k = prop_m)
+  
+  names(res_female)[2:6] <- paste0(names(res_female)[2:6], "_F")
+  names(res_male)[2:6] <- paste0(names(res_male)[2:6], "_M")
+  
+  res <- cbind(res_female, res_male[, -1])
+  
+  res <- data.table::data.table(res)
+  
+  return(res)
+}
