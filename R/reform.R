@@ -1,4 +1,4 @@
-#' Title
+#' Generating simulation-friendly demographic data
 #'
 #' @param dat 
 #' @param year0 
@@ -21,6 +21,10 @@
 #' agp = c(rep(1:16, each=5), rep(16, 21))
 #' agl = c(paste(seq(0, 70, 5), seq(4, 74, 5), sep = "-"), "75+")
 #' res = as_sim_age(dat, 2000, 2005, agp, agl, sex = "T", k = 1, bind = T)
+#' head(res)
+#' 
+#' res <- as_sim_sex(demo, 2000, 2005)
+#' head(res)
 #' 
 as_sim_age <- function(dat, year0, year1, agp, agl, sex = c("T", "F", "M"), 
                        ageing_to_dead = FALSE, k = 1, bind = FALSE, multi_task = FALSE) {
