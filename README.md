@@ -1,4 +1,4 @@
-# dp_dt
+# dpdt
 A model of population dynamics based on the United Nations population dynamic data.
 
 ## Usage
@@ -93,7 +93,7 @@ The **B**, **A**, **D**, and **M** can move the populatin in the current year (*
 
 **P1 = expm(B+A+D+M) P0**, where **expm** is the matrix exponential. 
 
-We solved **M** with `optim` function for minimising the euclidean distance between **P0** and **P1**.
+We solved **M** with `optim` function for minimising the euclidean distance between **P1** in simulation and in WPP projection.
 
 #### In simulation models,
 In transition matrix, the death rates locates at: **M**[absorbing state, age groups] <- - migration rates
@@ -104,6 +104,8 @@ To note that, migration is the difference between immigration and emigration, so
 ## Academic contact
 
 Chu-Chang Ku,
+
 Health Economic and Decision Science, University of Sheffield, UK
+
 Email: C.Ku@sheffield.ac.uk
 
