@@ -145,7 +145,7 @@ as_sim_age_sex <- function(dat, year0, year1, agp, agl, sex_ratio = 107,  ...) {
   
   res <- c(res_female, res_male[-(1:3)])
   
-  names(res)[3:8] <- paste0(names(res)[3:8], "_F")
+  names(res)[2:8] <- paste0(names(res)[2:8], "_F")
   names(res)[9:13] <- paste0(names(res)[9:13], "_M")
   
   class(res) <- "pop_agp_sex"

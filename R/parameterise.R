@@ -49,3 +49,54 @@ as_pars_sex <- function(sim, pkg = c("odin", "deSolve")) {
   
   return(pars)
 }
+
+
+#' @rdname as_pars_all
+#' @export
+as_pars_age <- function(sim, pkg = c("odin", "deSolve")) {
+  pkg <- match.arg(pkg)
+  
+  if (pkg == "odin") {
+    pars <- list(
+      tt = sim$Year,
+      br = sim$BirR,
+      ar = sim$Ageing,
+      mr = sim$MigR,
+      dr = sim$DeaR,
+      A0 = sim$PopN[1, ],
+      N_agp = length(sim$Labels)
+    )
+  } else {
+    # todo
+  }
+  
+  return(pars)
+}
+
+
+#' @rdname as_pars_all
+#' @export
+as_pars_age_sex <- function(sim, pkg = c("odin", "deSolve")) {
+  pkg <- match.arg(pkg)
+  
+  if (pkg == "odin") {
+    pars <- list(
+      tt = sim$Year,
+      ar = sim$Ageing,
+      br_f = sim$BirR_F,
+      mr_f = sim$MigR_F,
+      dr_f = sim$DeaR_F,
+      F0 = sim$PopN_F[1, ],
+      br_m = sim$BirR_M,
+      mr_m = sim$MigR_M,
+      dr_m = sim$DeaR_M,
+      M0 = sim$PopN_M[1, ],
+      N_agp = length(sim$Labels)
+    )
+
+  } else {
+    # todo
+  }
+  
+  return(pars)
+}

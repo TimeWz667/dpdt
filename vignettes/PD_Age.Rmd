@@ -1,5 +1,5 @@
 ---
-title: "Simulation with sex strata"
+title: "Simulation with age group strata"
 author: "TimeWz667"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -32,22 +32,25 @@ demo
 
 ## Prepare input
 
+### Define age groups and thier labels
 ```{r}
-sim <- as_sim_sex(demo, 2000, 2020)
+agp = c(rep(1, 15), rep(2, 50), rep(3, 36)) # Define age groups
+agl = c("Child", "Adult", "Old") # Label age groups
 ```
 
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(sim, 10))
+```{r}
+sim <- as_sim_age(demo, year0 = 2000, year1 = 2020, agp = agp, agl = agl)
 ```
 
 
 ## Start modelling
+
 ```{r}
-## Load model ----
-f <- system.file("example/PD_Sex.R", package = "dpdt")
+## Construct model ----
+f <- system.file("example/PD_Agp.R", package = "dpdt")
 model <- odin::odin(f)
 
-pars <- as_pars_sex(sim, pkg = "odin")
+pars <- as_pars_age(sim, pkg = "odin")
 compiled <- model(user=pars)
 
 ## Simulate ----
@@ -64,7 +67,7 @@ library(gridExtra)
 
 
 res <- data.frame(ys)[c("t", "N")]
-dat <- data.frame(t = sim$Year, N = sim$PopN_F + sim$PopN_M)
+dat <- data.frame(t = sim$Year, N = rowSums(sim$PopN)[1:length(sim$Year)])
 red <- (res$N - dat$N) / dat$N * 100
 red <- data.frame(t = sim$Year, Red = red) 
 
@@ -93,49 +96,4 @@ g_red <- ggplot(data = red, aes(x = t, y = Red)) +
 
 grid.arrange(g_all, g_red, layout_matrix = matrix(c(1, 2), 1, 2))
 
-```
-
-
-```{r, echo=FALSE, fig.width=7, fig.height = 5}
-
-res <- rbind(
-  data.frame(t = ys[, "t"], N = ys[, "NF"], Sex="Female"),
-  data.frame(t = ys[, "t"], N = ys[, "NM"], Sex="Male")
-)
-
-dat <- rbind(
-  data.frame(t = sim$Year, N = sim$PopN_F, Sex="Female"),
-  data.frame(t = sim$Year, N = sim$PopN_M, Sex="Male")
-)
-
-red <- data.frame(
-  t = res$t,
-  Red = (res$N - dat$N) / dat$N * 100,
-  Sex = dat$Sex
-) 
-
-g_sex <- ggplot(dat, aes(x = t, y = N / 1e6)) +
-  geom_point(aes(colour = "Data")) + 
-  geom_line(data = res, aes(colour = "Simulation")) + 
-  scale_x_continuous("Year") +
-  scale_y_continuous("Total Population (millions)") +
-  scale_color_discrete("Dynamics") + 
-  expand_limits(y = c(0, NA)) +
-  facet_wrap(Sex~., nrow = 2) + 
-  labs(title="Population dynamics, sex") +
-  theme_bw() + 
-  theme(legend.position = c(1, 0), 
-        legend.justification = c(1, 0), 
-        axis.text.x = element_text(angle = 90, hjust = 1))
-
-g_red_sex <- ggplot(data = red, aes(x = t, y = Red)) +
-  geom_point() + 
-  scale_x_continuous("Year") +
-  scale_y_continuous("Percentage of real data (%)", limits = c(-.1, .1)) +
-  facet_wrap(Sex~., nrow = 2) + 
-  labs(title="Residuals") +
-  theme_bw() + 
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
-
-grid.arrange(g_sex, g_red_sex, layout_matrix = matrix(c(1, 2), 1, 2))
 ```

@@ -1,6 +1,5 @@
-deriv(A[1]) <- N * br_t + A[i] * (mr_t[i] - dr_t[i] - 1/5)
-deriv(A[2:N_agp]) <-  A[i] * (mr_t[i] - dr_t[i] - 1/5) + A[i-1] * 1/5
-# deriv(A[N_agp]) <-        A[i] * (mr_t[i] - dr_t[i]) +       A[i-1] * 1/5
+deriv(A[1]) <- N * br_t + A[i] * (mr_t[i] - dr_t[i] - ar[i])
+deriv(A[2:N_agp]) <-  A[i] * (mr_t[i] - dr_t[i] - ar[i]) + A[i-1] * ar[i-1]
 
 initial(A[]) <- A0[i] 
 dim(A) <- N_agp
@@ -23,6 +22,8 @@ tt[] <- user()
 dim(tt) <- user()
 br[] <- user()
 dim(br) <- user()
+ar[] <- user()
+dim(ar) <- user()
 mr[, ] <- user()
 dim(mr) <- user()
 dr[, ] <- user()

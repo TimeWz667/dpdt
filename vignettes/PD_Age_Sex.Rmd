@@ -1,5 +1,5 @@
 ---
-title: "Simulation with sex strata"
+title: "Simulation with age group and sex strata"
 author: "TimeWz667"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -32,22 +32,25 @@ demo
 
 ## Prepare input
 
+### Define age groups and thier labels
 ```{r}
-sim <- as_sim_sex(demo, 2000, 2020)
+agp = c(rep(1, 15), rep(2, 50), rep(3, 36)) # Define age groups
+agl = c("Child", "Adult", "Old") # Label age groups
 ```
 
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(sim, 10))
+```{r}
+sim <- as_sim_age_sex(demo, year0 = 2000, year1 = 2020, agp = agp, agl = agl)
 ```
 
 
 ## Start modelling
+
 ```{r}
 ## Load model ----
-f <- system.file("example/PD_Sex.R", package = "dpdt")
+f <- system.file("example/PD_AgpSex.R", package = "dpdt")
 model <- odin::odin(f)
 
-pars <- as_pars_sex(sim, pkg = "odin")
+pars <- as_pars_age_sex(sim, pkg = "odin")
 compiled <- model(user=pars)
 
 ## Simulate ----
@@ -64,7 +67,7 @@ library(gridExtra)
 
 
 res <- data.frame(ys)[c("t", "N")]
-dat <- data.frame(t = sim$Year, N = sim$PopN_F + sim$PopN_M)
+dat <- data.frame(t = sim$Year, N = rowSums(sim$PopN_F + sim$PopN_M)[1:length(sim$Year)])
 red <- (res$N - dat$N) / dat$N * 100
 red <- data.frame(t = sim$Year, Red = red) 
 
@@ -104,8 +107,8 @@ res <- rbind(
 )
 
 dat <- rbind(
-  data.frame(t = sim$Year, N = sim$PopN_F, Sex="Female"),
-  data.frame(t = sim$Year, N = sim$PopN_M, Sex="Male")
+  data.frame(t = sim$Year, N = rowSums(sim$PopN_F)[1:length(sim$Year)], Sex="Female"),
+  data.frame(t = sim$Year, N = rowSums(sim$PopN_M)[1:length(sim$Year)], Sex="Male")
 )
 
 red <- data.frame(

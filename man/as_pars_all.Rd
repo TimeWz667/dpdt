@@ -3,11 +3,17 @@
 \name{as_pars_all}
 \alias{as_pars_all}
 \alias{as_pars_sex}
+\alias{as_pars_age}
+\alias{as_pars_age_sex}
 \title{Title}
 \usage{
 as_pars_all(sim, pkg = c("odin", "deSolve"))
 
 as_pars_sex(sim, pkg = c("odin", "deSolve"))
+
+as_pars_age(sim, pkg = c("odin", "deSolve"))
+
+as_pars_age_sex(sim, pkg = c("odin", "deSolve"))
 }
 \arguments{
 \item{sim}{}
