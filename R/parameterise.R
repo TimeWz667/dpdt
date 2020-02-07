@@ -7,6 +7,27 @@
 #' @export
 #'
 #' @examples
+as_pars_all <- function(sim, pkg = c("odin", "deSolve")) {
+  pkg <- match.arg(pkg)
+  
+  if (pkg == "odin") {
+    pars <- list(
+      tt = sim$Year,
+      br = sim$BirR,
+      mr = sim$MigR,
+      dr = sim$DeaR,
+      N0 = sim$PopN[1]
+    )
+  } else {
+    # todo
+  }
+  
+  return(pars)
+}
+
+
+#' @rdname as_pars_all
+#' @export
 as_pars_sex <- function(sim, pkg = c("odin", "deSolve")) {
   pkg <- match.arg(pkg)
   
@@ -23,7 +44,7 @@ as_pars_sex <- function(sim, pkg = c("odin", "deSolve")) {
       M0 = sim$PopN_M[1]
     )
   } else {
-    
+    # todo
   }
   
   return(pars)

@@ -1,0 +1,95 @@
+---
+title: "Simulation with whole population"
+author: "TimeWz667"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Load dpdt and odin as beginning
+```{r}
+library(dpdt)
+library(odin)
+```
+
+## Fetch demography data from github
+
+
+```{r}
+demo <- fetch_demography(folder = "ByCountry/United Kingdom")
+demo
+```
+
+## Prepare input
+
+```{r}
+sim <- as_sim_all(demo, 2000, 2020)
+```
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(head(sim, 10))
+```
+
+
+```{r}
+## Construct model ----
+f <- system.file("example/PD_All.R", package = "dpdt")
+model <- odin::odin(f)
+
+pars <- as_pars_all(sim, pkg = "odin")
+compiled <- model(user=pars)
+
+## Simulate ----
+times <- seq(2000, 2020, 0.1)
+ys <- compiled$run(times)
+ys <- ys[times == round(times), ]
+```
+
+
+```{r, echo=FALSE, fig.width = 7}
+
+library(ggplot2)
+library(gridExtra)
+
+
+res <- data.frame(ys)[c("t", "N")]
+dat <- data.frame(t = sim$Year, N = sim$PopN)
+red <- (res$N - dat$N) / dat$N * 100
+red <- data.frame(t = sim$Year, Red = red) 
+
+
+g_all <- ggplot(data = res, aes(x = t, y = N / 1e6)) +
+  geom_line(aes(colour = "Simulation")) + 
+  geom_point(data=dat, aes(colour = "Data")) + 
+  scale_x_continuous("Year") +
+  scale_y_continuous("Total Population (millions)") +
+  scale_color_discrete("Dynamics") + 
+  expand_limits(y = c(0, NA)) +
+  labs(title="Population dynamics, all") +
+  theme_bw() + 
+  theme(legend.position = c(1, 0), 
+        legend.justification = c(1, 0), 
+        axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+g_red <- ggplot(data = red, aes(x = t, y = Red)) +
+  geom_point() + 
+  scale_x_continuous("Year") +
+  scale_y_continuous("Percentage of real data (%)", limits = c(-.1, .1)) +
+  labs(title="Residuals") +
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+grid.arrange(g_all, g_red, layout_matrix = matrix(c(1, 2), 1, 2))
+
+```
