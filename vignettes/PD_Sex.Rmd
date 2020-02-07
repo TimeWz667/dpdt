@@ -1,27 +1,63 @@
-rm(list=ls())
+---
+title: "Simulation with sex strata"
+author: "TimeWz667"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Load dpdt and odin as beginning
+```{r}
 library(dpdt)
 library(odin)
+```
+
+## Fetch demography data from github
 
 
-## Prepare input ----
+```{r}
 demo <- fetch_demography(folder = "ByCountry/United Kingdom")
-sim <- as_sim_sex(demo, 2000, 2050)
-pars <- as_pars_sex(sim, pkg = "odin")
+demo
+```
+
+## Prepare input
+
+```{r}
+sim <- as_sim_sex(demo, 2000, 2020)
+```
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(head(sim, 10))
+```
 
 
-## Construct model ----
+```{r}
+## Load model ----
 f <- system.file("example/PD_Sex.R", package = "dpdt")
 model <- odin::odin(f)
+
+pars <- as_pars_sex(sim, pkg = "odin")
 compiled <- model(user=pars)
 
-
 ## Simulate ----
-times <- seq(2000, 2050, 0.1)
+times <- seq(2000, 2020, 0.1)
 ys <- compiled$run(times)
 ys <- ys[times == round(times), ]
-print(ys)
+```
 
-## Compare with data
+
+```{r, echo=FALSE, fig.width = 7}
+
 library(ggplot2)
 library(gridExtra)
 
@@ -54,6 +90,12 @@ g_red <- ggplot(data = red, aes(x = t, y = Red)) +
   theme_bw() + 
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
+grid.arrange(g_all, g_red, layout_matrix = matrix(c(1, 2), 1, 2))
+
+```
+
+
+```{r, echo=FALSE, fig.width=7, fig.height = 5}
 
 res <- rbind(
   data.frame(t = ys[, "t"], N = ys[, "NF"], Sex="Female"),
@@ -78,7 +120,7 @@ g_sex <- ggplot(dat, aes(x = t, y = N / 1e6)) +
   scale_y_continuous("Total Population (millions)") +
   scale_color_discrete("Dynamics") + 
   expand_limits(y = c(0, NA)) +
-  facet_wrap(.~Sex) + 
+  facet_wrap(Sex~., nrow = 2) + 
   labs(title="Population dynamics, sex") +
   theme_bw() + 
   theme(legend.position = c(1, 0), 
@@ -89,14 +131,10 @@ g_red_sex <- ggplot(data = red, aes(x = t, y = Red)) +
   geom_point() + 
   scale_x_continuous("Year") +
   scale_y_continuous("Percentage of real data (%)", limits = c(-.1, .1)) +
-  facet_wrap(.~Sex) + 
+  facet_wrap(Sex~., nrow = 2) + 
   labs(title="Residuals") +
   theme_bw() + 
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
-
-grid.arrange(g_all, g_sex, g_red, g_red_sex, 
-             layout_matrix = cbind(c(1, 1, 3), c(2, 2, 4)))
-
-
-
+grid.arrange(g_sex, g_red_sex, layout_matrix = matrix(c(1, 2), 1, 2))
+```
