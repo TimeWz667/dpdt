@@ -175,4 +175,4 @@ Email: C.Ku@sheffield.ac.uk
 
 ## License
 
-MIT © Health Economic and Decision Science, University of Sheffield
+MIT
