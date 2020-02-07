@@ -37,6 +37,13 @@ fetch_demography <- function(folder = "ByCountry/United Kingdom",
   return(res)
 }
 
+
+load_demography <- function(folder) {
+  require(data.table)
+  # todo
+}
+
+
 #' @rdname fetch_demography
 #' @export
 print.pop_raw <- function(obj) {
