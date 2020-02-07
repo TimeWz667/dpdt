@@ -33,7 +33,7 @@ calc_migration_agp <- function(p0, p1, br, dr, ageing, n_agp, optim_fn) {
 }
 
 
-calc_migration_agg <- function(p0, p1, dr, br) {
+calc_migration_agg <- function(p0, p1, br, dr) {
   mr <- log(p1/p0) - br + dr
   p_hat <- p0 * exp(mr + br - dr)
   

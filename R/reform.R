@@ -197,7 +197,7 @@ as_sim_all <- function(dat, year0, year1, sex = c("T", "F", "M"), k = 1) {
     res.brs[index] <- br <- bn / sum(p0)
     res.ps[index] <- p0
     
-    mig <- calc_migration_agg(p0, p1, br, dr)
+    mig <- calc_migration_agg(p0 = p0, p1 = p1, br = br, dr = dr)
     res.mrs[index] <- mig$MigR
     res.mses[index] <- mig$MSE
   }

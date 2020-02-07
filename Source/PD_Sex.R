@@ -1,56 +1,38 @@
 rm(list=ls())
+library(dpdt)
 library(odin)
-
-load(file="Output/SimDemo.rdata")
-
-
-## Setting ----
-country <- "Malawi"
-pop <- sim_sex[[country]]
-year0 <- 2005
-year1 <- 2050
-i_year <- year0:year1 - 1999
 
 
 ## Prepare input ----
-pars <- list(
-  tt = year0:year1,
-  br_f = pop$BirR_F[i_year],
-  mr_f = pop$MigR_F[i_year],
-  dr_f = pop$DeaR_F[i_year],
-  F0 = pop$PopN_F[i_year[1]],
-  br_m = pop$BirR_M[i_year],
-  mr_m = pop$MigR_M[i_year],
-  dr_m = pop$DeaR_M[i_year],
-  M0 = pop$PopN_M[i_year[1]]
-)
+demo <- fetch_demography(folder = "ByCountry/United Kingdom")
+sim <- as_sim_sex(demo, 2000, 2050)
+pars <- as_pars_sex(sim, pkg = "odin")
 
 
 ## Construct model ----
 f <- system.file("example/PD_Sex.R", package = "dpdt")
-model_sex <- odin::odin(f)
-
-cm_sex <- model_sex(user=pars)
+model <- odin::odin(f)
+compiled <- model(user=pars)
 
 
 ## Simulate ----
-times <- seq(year0, year1, 0.1)
-ys <- cm_sex$run(times)
+times <- seq(2000, 2050, 0.1)
+ys <- compiled$run(times)
 ys <- ys[times == round(times), ]
-
+print(ys)
 
 ## Compare with data
 library(ggplot2)
 library(gridExtra)
 
 
-sim <- data.frame(ys)[c("t", "N")]
-dat <- data.frame(t = year0:year1, N = pop$PopN_F[i_year] + pop$PopN_M[i_year])
-red <- (sim - dat) / dat * 100
-red$t <- dat$t
+res <- data.frame(ys)[c("t", "N")]
+dat <- data.frame(t = sim$Year, N = sim$PopN_F + sim$PopN_M)
+red <- (res$N - dat$N) / dat$N * 100
+red <- data.frame(t = sim$Year, Red = red) 
 
 
-g_all <- ggplot(data = sim, aes(x = t, y = N / 1e6)) +
+g_all <- ggplot(data = res, aes(x = t, y = N / 1e6)) +
   geom_line(aes(colour = "Simulation")) + 
   geom_point(data=dat, aes(colour = "Data")) + 
   scale_x_continuous("Year") +
@@ -64,7 +46,7 @@ g_all <- ggplot(data = sim, aes(x = t, y = N / 1e6)) +
         axis.text.x = element_text(angle = 90, hjust = 1))
 
 
-g_red <- ggplot(data = red, aes(x = t, y = N)) +
+g_red <- ggplot(data = red, aes(x = t, y = Red)) +
   geom_point() + 
   scale_x_continuous("Year") +
   scale_y_continuous("Percentage of real data (%)", limits = c(-.1, .1)) +
@@ -73,25 +55,25 @@ g_red <- ggplot(data = red, aes(x = t, y = N)) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 
-sim <- rbind(
+res <- rbind(
   data.frame(t = ys[, "t"], N = ys[, "NF"], Sex="Female"),
   data.frame(t = ys[, "t"], N = ys[, "NM"], Sex="Male")
 )
 
 dat <- rbind(
-  data.frame(t = year0:year1, N = pop$PopN_F[i_year], Sex="Female"),
-  data.frame(t = year0:year1, N = pop$PopN_M[i_year], Sex="Male")
+  data.frame(t = sim$Year, N = sim$PopN_F, Sex="Female"),
+  data.frame(t = sim$Year, N = sim$PopN_M, Sex="Male")
 )
 
 red <- data.frame(
-  t = sim$t,
-  N = (sim$N - dat$N) / dat$N * 100,
-  Sex = sim$Sex
+  t = res$t,
+  Red = (res$N - dat$N) / dat$N * 100,
+  Sex = dat$Sex
 ) 
 
 g_sex <- ggplot(dat, aes(x = t, y = N / 1e6)) +
   geom_point(aes(colour = "Data")) + 
-  geom_line(data = sim, aes(colour = "Simulation")) + 
+  geom_line(data = res, aes(colour = "Simulation")) + 
   scale_x_continuous("Year") +
   scale_y_continuous("Total Population (millions)") +
   scale_color_discrete("Dynamics") + 
@@ -103,7 +85,7 @@ g_sex <- ggplot(dat, aes(x = t, y = N / 1e6)) +
         legend.justification = c(1, 0), 
         axis.text.x = element_text(angle = 90, hjust = 1))
 
-g_red_sex <- ggplot(data = red, aes(x = t, y = N)) +
+g_red_sex <- ggplot(data = red, aes(x = t, y = Red)) +
   geom_point() + 
   scale_x_continuous("Year") +
   scale_y_continuous("Percentage of real data (%)", limits = c(-.1, .1)) +

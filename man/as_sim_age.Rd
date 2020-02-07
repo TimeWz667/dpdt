@@ -7,8 +7,18 @@
 \alias{as_sim_sex}
 \title{Generating simulation-friendly demographic data}
 \usage{
-as_sim_age(dat, year0, year1, agp, agl, sex = c("T", "F", "M"),
-  ageing_to_dead = FALSE, k = 1, bind = FALSE, multi_task = FALSE)
+as_sim_age(
+  dat,
+  year0,
+  year1,
+  agp,
+  agl,
+  sex = c("T", "F", "M"),
+  ageing_to_dead = FALSE,
+  k = 1,
+  bind = FALSE,
+  multi_task = FALSE
+)
 
 as_sim_age_sex(dat, year0, year1, agp, agl, sex_ratio = 107, ...)
 
@@ -38,6 +48,9 @@ as_sim_sex(dat, year0, year1, sex_ratio = 107)
 \item{multi_task}{cores for parallel computation, FALSE for single tread.}
 
 \item{sex_ratio}{sex ratio at birth, 107 for the global average}
+}
+\value{
+
 }
 \description{
 Generating simulation-friendly demographic data
