@@ -48,8 +48,8 @@ head(sim)
 
 #### Model for a population with age grouping
 ```r
-agp = c(rep(1:16, each=5), rep(16, 21)) # Define age groups
-agl = c(paste(seq(0, 70, 5), seq(4, 74, 5), sep = "-"), "75+") # Label age groups
+agp = c(rep(1, 15), rep(2, 50), rep(3, 36)) # Define age groups
+agl = c("Child", "Adult", "Old") # Label age groups
 
 sim <- as_sim_age(dat, year0 = 2000, year1 = 2020, agp = agp, agl = agl)
 head(sim)
@@ -57,8 +57,9 @@ head(sim)
 
 #### Model for a population with age grouping and binary sex strata
 ```r
-agp = c(rep(1, 15), rep(2, 50), rep(3, 36)) # Define age groups
-agl = c("Child", "Adult", "Old") # Label age groups
+
+agp = c(rep(1:16, each=5), rep(16, 21)) # Define age groups
+agl = c(paste(seq(0, 70, 5), seq(4, 74, 5), sep = "-"), "75+") # Label age groups
 
 sim <- as_sim_age_sex(dat, year0 = 2000, year1 = 2020, agp = agp, agl = agl, sex_ratio = 107)
 head(sim)
@@ -66,7 +67,15 @@ head(sim)
 
 ### Bring the reformatted data to simulation models
 
-TBA
+#### Use `deSolve`
+```r
+
+```
+
+#### Use `odin`
+```r
+
+```
 
 
 
@@ -128,7 +137,7 @@ For the final age group, if you can use as_sim_age(..., ageing_to_dead = False) 
 
 
 #### In simulation models,
-In transition matrix, the death rates with negative signs locate at: 
+In a matrix form, the death rates with negative signs locate at: 
 ```r
 # n_agp: number of age group
 D <- diag(- rate_death)
