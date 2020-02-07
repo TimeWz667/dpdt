@@ -69,12 +69,34 @@ head(sim)
 
 #### Use `deSolve`
 ```r
+## Prepare input ----
+demo <- fetch_demography(folder = "ByCountry/United Kingdom")
+sim <- as_sim_sex(demo, 2000, 2050)
+pars <- as_pars_sex(sim, pkg = "deSolve")
 
+## Construct model ----
+TBA
+## Simulate ----
+TBA
 ```
 
 #### Use `odin`
 ```r
+## Prepare input ----
+demo <- fetch_demography(folder = "ByCountry/United Kingdom")
+sim <- as_sim_sex(demo, 2000, 2050)
+pars <- as_pars_sex(sim, pkg = "odin")
 
+## Construct model ----
+f <- system.file("example/PD_Sex.R", package = "dpdt")
+model <- odin::odin(f)
+compiled <- model(user=pars)
+
+## Simulate ----
+times <- seq(2000, 2050, 0.1)
+ys <- compiled$run(times)
+ys <- ys[times == round(times), ]
+print(ys)
 ```
 
 
