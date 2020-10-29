@@ -51,7 +51,7 @@ head(sim)
 agp = c(rep(1, 15), rep(2, 50), rep(3, 36)) # Define age groups
 agl = c("Child", "Adult", "Old") # Label age groups
 
-sim <- as_sim_age(dat, year0 = 2000, year1 = 2020, agp = agp, agl = agl)
+sim <- as_sim_age(demo, year0 = 2000, year1 = 2020, agp = agp, agl = agl)
 head(sim)
 ```
 
