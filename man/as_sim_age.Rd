@@ -20,7 +20,16 @@ as_sim_age(
   multi_task = FALSE
 )
 
-as_sim_age_sex(dat, year0, year1, agp, agl, sex_ratio = 107, ...)
+as_sim_age_sex(
+  dat,
+  year0,
+  year1,
+  agp,
+  agl,
+  sex_ratio = 107,
+  multi_task,
+  verbose = F
+)
 
 as_sim_all(dat, year0, year1, sex = c("T", "F", "M"), k = 1)
 

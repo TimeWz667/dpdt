@@ -15,22 +15,22 @@ fetch_demography <- function(folder = "ByCountry/United Kingdom",
                              repo = "TimeWz667/pop4modelling", 
                              branch = "master") {
   require(data.table)
-
+  
   in_folder <- paste("https://raw.githubusercontent.com", repo, branch, folder, sep = "/")
   in_folder <- gsub(" ", "%20", in_folder)
   
   res <- list(
-    BirthN = data.table::fread(paste0(in_folder, "/Births.csv"), key = "Time"),
-    DeaR_F = data.table::fread(paste0(in_folder, "/DeaF.csv")),
-    DeaR_M = data.table::fread(paste0(in_folder, "/DeaM.csv")),
-    DeaR_T = data.table::fread(paste0(in_folder, "/DeaT.csv")),
+    FerR = data.table::fread(paste0(in_folder, "/FertSpline.csv")),
+    # BirthN = data.table::fread(paste0(in_folder, "/Births.csv"), key = "Time"),
+    DeaR_F = data.table::fread(paste0(in_folder, "/DeaSplineF.csv")),
+    DeaR_M = data.table::fread(paste0(in_folder, "/DeaSplineM.csv")),
+    # DeaR_T = data.table::fread(paste0(in_folder, "/DeaT.csv")),
     PopN_F = data.table::fread(paste0(in_folder, "/PopF.csv")),
-    PopN_M = data.table::fread(paste0(in_folder, "/PopM.csv")),
-    PopN_T = data.table::fread(paste0(in_folder, "/PopT.csv"))
+    PopN_M = data.table::fread(paste0(in_folder, "/PopM.csv"))
   )
   
-  res$Range <- range(res$BirthN$Time)
-  res$N_Age <- dim(res$DeaR_F)[2] - 1
+  res$Range <- range(res$FerR$Time)
+  res$N_Age <- ncol(res$DeaR_F) - 1
   res$Setting <- folder
   
   class(res) <- "pop_raw"
